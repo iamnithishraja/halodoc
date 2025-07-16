@@ -13,8 +13,6 @@ import RatingModal from './RatingModal';
 import VideoCallModal from './VideoCallModal';
 import { useCustomAlert } from '@/components/CustomAlert';
 import { useRatingSystem } from '@/hooks/useRatingSystem';
-import ToctorFloatingButton from './ToctorFloatingButton';
-import ToctorAIChat from './ToctorAIChat';
 
 // Import modular components and types
 import {
@@ -430,9 +428,6 @@ const UserDashboard: React.FC = () => {
             />
           </View>
         </ScrollView>
-
-        {/* AI Chat Floating Button */}
-        <ToctorFloatingButton onPress={handleOpenAIChat} />
 
         {/* Video Call Modal */}
         {selectedVideoCallAppointment && (

@@ -33,12 +33,6 @@ export const razorpayInstance = new Razorpay({
   key_id: process.env.RAZORPAY_KEYID || "your-razorpay-keyid",
   key_secret: process.env.RAZORPAY_API_SECRET,
 });
-console.log(process.env.RAZORPAY_KEYID);
-console.log(process.env.RAZORPAY_API_SECRET);
-
-// app.get("/", (req, res) => {
-//   res.send("Hello chutiye");
-// });
 
 app.use('/api/v1/', userRouter);
 app.use('/api/v1/', profileRouter);

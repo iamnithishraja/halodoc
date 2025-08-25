@@ -4,12 +4,18 @@ import { razorpayInstance } from "../index";
 import crypto from "crypto";
 import DoctorAppointment from "../models/doctorAppointments";
 import LabAppointment from "../models/labAppointments";
+import Order from "../models/ordersModel";
 import { DoctorProfile, LaboratoryProfile } from "../models/profileModel";
 
 interface PaymentOrderRequest {
     appointmentId: string;
     appointmentType: 'doctor' | 'lab';
     amount: number;
+}
+
+interface ProductPaymentOrderRequest {
+    amount: number;
+    currency?: string;
 }
 
 const createPaymentOrder = async (req: CustomRequest, res: Response): Promise<void> => {
@@ -128,6 +134,8 @@ const handleWebhook = async (req: Request, res: Response): Promise<void> => {
         if (event === 'payment.captured') {
             // Payment was successful
             const notes = payload.notes;
+            
+            // Handle appointment payments
             if (notes && notes.appointmentId && notes.appointmentType) {
                 const { appointmentId, appointmentType } = notes;
                 
@@ -141,6 +149,25 @@ const handleWebhook = async (req: Request, res: Response): Promise<void> => {
                     });
                 }
             }
+            
+            // Handle product order payments
+            if (notes && notes.orderId) {
+                const { orderId } = notes;
+                const order = await Order.findById(orderId);
+                
+                if (order) {
+                    order.isPaid = true;
+                    
+                    // Update order status based on needAssignment
+                    if (order.needAssignment) {
+                        order.status = 'pending_assignment';
+                    } else {
+                        order.status = 'confirmed';
+                    }
+                    
+                    await order.save();
+                }
+            }
         }
 
         res.status(200).json({ status: 'ok' });
@@ -151,4 +178,86 @@ const handleWebhook = async (req: Request, res: Response): Promise<void> => {
     }
 };
 
-export { createPaymentOrder, verifyPayment, handleWebhook }; 
+const createProductPaymentOrder = async (req: CustomRequest, res: Response): Promise<void> => {
+    try {
+        const { amount, currency = 'INR' }: ProductPaymentOrderRequest = req.body;
+        const userId = req.user._id;
+
+        // Create Razorpay order for payment
+        const options = {
+            amount: amount, // Amount should already be in paise from frontend
+            currency: currency,
+            receipt: `ORDER_${Date.now().toString().slice(-8)}_${Math.random().toString(36).substr(2, 8)}`,
+            notes: {
+                userId: userId.toString()
+            }
+        };
+
+        const razorpayOrder = await razorpayInstance.orders.create(options);
+
+        res.status(201).json({
+            orderId: razorpayOrder.id,
+            amount: razorpayOrder.amount,
+            currency: razorpayOrder.currency
+        });
+
+    } catch (error) {
+        console.error('Error creating product payment order:', error);
+        res.status(500).json({ message: 'Failed to create payment order', error });
+    }
+};
+
+const verifyProductPayment = async (req: CustomRequest, res: Response): Promise<void> => {
+    try {
+        const { 
+            razorpay_order_id, 
+            razorpay_payment_id, 
+            razorpay_signature,
+            orderId
+        } = req.body;
+
+        // Verify signature
+        const body = razorpay_order_id + "|" + razorpay_payment_id;
+        const expectedSignature = crypto
+            .createHmac("sha256", process.env.RAZORPAY_API_SECRET!)
+            .update(body.toString())
+            .digest("hex");
+
+        if (expectedSignature !== razorpay_signature) {
+            res.status(400).json({ message: 'Invalid payment signature' });
+            return;
+        }
+
+        // Update order payment status
+        const order = await Order.findById(orderId);
+        if (!order) {
+            res.status(404).json({ message: 'Order not found' });
+            return;
+        }
+
+        order.isPaid = true;
+        
+        // Update order status based on needAssignment
+        if (order.needAssignment) {
+            // For prescription orders - set to pending_assignment for admin to assign lab
+            order.status = 'pending_assignment';
+        } else {
+            // For cart orders - set to confirmed since lab is already assigned
+            order.status = 'confirmed';
+        }
+        
+        await order.save();
+
+        res.status(200).json({ 
+            message: 'Payment verified successfully',
+            paymentId: razorpay_payment_id,
+            orderStatus: order.status
+        });
+
+    } catch (error) {
+        console.error('Error verifying product payment:', error);
+        res.status(500).json({ message: 'Payment verification failed', error });
+    }
+};
+
+export { createPaymentOrder, verifyPayment, handleWebhook, createProductPaymentOrder, verifyProductPayment }; 

@@ -132,12 +132,10 @@ const registerUser = async (req: Request, res: Response): Promise<void> => {
 const loginUser = async (req: Request, res: Response): Promise<void> => {
     try {
         const { email, password } = req.body;
-        
         if (!email || !password) {
             res.status(400).json({ message: 'Email and password are required' });
             return;
         }
-
         // Check if user is suspended
         const isSuspended = await SuspendedUser.isSuspended(email);
         if (isSuspended) {
@@ -150,7 +148,6 @@ const loginUser = async (req: Request, res: Response): Promise<void> => {
             });
             return;
         }
-
         const user = await User.findOne({ email }).select('+password');
         if (!user) {
             res.status(401).json({ message: 'Invalid email or password' });
@@ -161,6 +158,7 @@ const loginUser = async (req: Request, res: Response): Promise<void> => {
             res.status(401).json({ message: 'Invalid email or password' });
             return;
         }
+
         const token = generateToken(user._id.toString());
         user.password = '';
         res.status(200).json({ user, token });

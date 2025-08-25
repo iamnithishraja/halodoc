@@ -110,6 +110,7 @@ const Home: React.FC = () => {
   const [labAppointments, setLabAppointments] = useState<Appointment[]>([]);
   const [activityFeed, setActivityFeed] = useState<ActivityItem[]>([]);
   const [revenue, setRevenue] = useState<{ total: number; upcoming: number }>({ total: 0, upcoming: 0 });
+  const [orderRevenue, setOrderRevenue] = useState<number>(0);
   const [activeAppointmentTab, setActiveAppointmentTab] = useState<'doctor' | 'lab'>('doctor');
   // Add roleStats state and fetch logic
   const [roleStats, setRoleStats] = useState<{ _id: string; count: number }[]>([]);
@@ -195,6 +196,20 @@ const Home: React.FC = () => {
       }
     };
     fetchRevenue();
+  }, []);
+
+  useEffect(() => {
+    const fetchOrderRevenue = async () => {
+      try {
+        const token = localStorage.getItem('admin_token');
+        const url = (import.meta.env.VITE_FRONTEND_API_KEY || 'http://localhost:3000') + '/api/v1/admin/orders/stats';
+        const res = await axios.get(url, { headers: token ? { Authorization: `Bearer ${token}` } : {} });
+        setOrderRevenue(res.data.data?.totalRevenue || 0);
+      } catch {
+        setOrderRevenue(0);
+      }
+    };
+    fetchOrderRevenue();
   }, []);
 
   useEffect(() => {
@@ -417,7 +432,7 @@ const Home: React.FC = () => {
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
           <h1 className="text-4xl font-bold text-gray-900 mb-2">Admin Dashboard</h1>
-          <p className="text-gray-600 text-lg">Professional overview and management for HaloDoc platform.</p>
+          <p className="text-gray-600 text-lg">Professional overview and management for halodoc platform.</p>
           </div>
         <div className="flex gap-2 items-center">
           <span className="text-xs text-gray-500">Last updated</span>
@@ -441,12 +456,15 @@ const Home: React.FC = () => {
       </div>
 
       {/* Revenue & Appointments */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
         <div onClick={() => handleRevenueCardClick('paid')} className="cursor-pointer">
           <RevenueCard title="Total Revenue" value={revenue.total} icon={<FaMoneyBillWave />} color="hover:bg-green-50" subtitle="All paid doctor and lab appointments" />
         </div>
         <div onClick={() => handleRevenueCardClick('unpaid')} className="cursor-pointer">
           <RevenueCard title="Upcoming Revenue" value={revenue.upcoming} icon={<FaClock />} color="hover:bg-yellow-50" subtitle="Unpaid doctor and lab appointments" />
+        </div>
+        <div className="cursor-pointer">
+          <RevenueCard title="Order Revenue" value={orderRevenue} icon={<FaMoneyBillWave />} color="hover:bg-purple-50" subtitle="Total revenue from orders" />
         </div>
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

@@ -4,8 +4,11 @@ import { Platform, View } from 'react-native';
 
 import { HapticTab } from '@/components/HapticTab';
 import { IconSymbol } from '@/components/ui/IconSymbol';
+import { useUserStore } from '@/store/userStore';
 
 export default function TabLayout() {
+  const { user } = useUserStore();
+
   return (
     <Tabs
       screenOptions={{
@@ -51,6 +54,13 @@ export default function TabLayout() {
         options={{
           title: 'Laboratories',
           tabBarIcon: ({ color }: { color: string }) => <IconSymbol size={24} name="cross.case" color={color} weight="medium" />,
+        }}
+      />
+      <Tabs.Screen
+        name="medicines"
+        options={{
+          title: 'Medicines',
+          tabBarIcon: ({ color }: { color: string }) => <IconSymbol size={24} name="pharmacy" color={color} weight="medium" />,
         }}
       />
       <Tabs.Screen

@@ -20,8 +20,17 @@ import {
   getAllSuspensions,
   getRevenueDetails,
   rejectDoctorProfile,
-  getAppointmentTrends
+  getAllProducts,
+  deleteProduct,
+  getAllOrders,
+  getOrderDetails,
+  getOrderStats,
+  assignLabToOrder,
+  assignDeliveryPartnerToOrder,
+  getAvailableDeliveryPartners,
+  getDeliveryPartnerDetails
 } from '../controllers/adminController';
+import { deleteProduct as deleteProductController } from '../controllers/productController';
 
 const adminRouter = Router();
 
@@ -57,5 +66,20 @@ adminRouter.post('/users/suspend', isAuthenticatedUser, isAdmin, suspendUser);
 adminRouter.put('/users/:userId/unsuspend', isAuthenticatedUser, isAdmin, unsuspendUser);
 adminRouter.get('/users/:userId/suspension-status', isAuthenticatedUser, isAdmin, getUserSuspensionStatus);
 adminRouter.get('/suspensions', isAuthenticatedUser, isAdmin, getAllSuspensions);
+
+// Product management routes
+adminRouter.get('/products', isAuthenticatedUser, isAdmin, getAllProducts);
+adminRouter.delete('/products/:productId', isAuthenticatedUser, isAdmin, deleteProductController);
+
+// Order management routes
+adminRouter.get('/orders', isAuthenticatedUser, isAdmin, getAllOrders);
+adminRouter.get('/orders/stats', isAuthenticatedUser, isAdmin, getOrderStats);
+adminRouter.get('/orders/:orderId', isAuthenticatedUser, isAdmin, getOrderDetails);
+adminRouter.put('/orders/:orderId/assign-lab', isAuthenticatedUser, isAdmin, assignLabToOrder);
+adminRouter.put('/orders/:orderId/assign-delivery', isAuthenticatedUser, isAdmin, assignDeliveryPartnerToOrder);
+adminRouter.get('/delivery-partners', isAuthenticatedUser, isAdmin, getAvailableDeliveryPartners);
+
+// Delivery partner management routes
+adminRouter.get('/delivery-partners/:partnerId', isAuthenticatedUser, isAdmin, getDeliveryPartnerDetails);
 
 export default adminRouter; 

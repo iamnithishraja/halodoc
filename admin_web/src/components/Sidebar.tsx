@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
-import { FaChartBar, FaUsers, FaUserMd, FaFlask, FaSignInAlt, FaTruck, FaUserShield } from 'react-icons/fa';
+import { FaChartBar, FaUsers, FaUserMd, FaFlask, FaSignInAlt, FaTruck, FaUserShield, FaClipboardList, FaBox } from 'react-icons/fa';
 
 const Sidebar: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -65,6 +65,18 @@ const Sidebar: React.FC = () => {
       description: 'Delivery Staff'
     },
     { 
+      path: '/orders', 
+      label: 'Orders', 
+      icon: <FaClipboardList className="text-lg" />, // or FaBoxOpen for package
+      description: 'Medicine Orders'
+    },
+    { 
+      path: '/products', 
+      label: 'Products', 
+      icon: <FaBox className="text-lg" />,
+      description: 'Medicine Products'
+    },
+    { 
       path: '/role-management', 
       label: 'Role Management', 
       icon: <FaUserShield className="text-lg" />,
@@ -89,8 +101,8 @@ const Sidebar: React.FC = () => {
       <div className="sticky top-0 z-10 bg-background rounded-tr-2xl p-6 border-b border-border flex items-center gap-4 shadow-sm">
         <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg overflow-hidden">
           <img 
-            src="/logo.jpeg" 
-            alt="HaloDoc Logo" 
+            src="../../logo.jpng" 
+            alt="halodoc Logo" 
             className="w-8 h-8 object-contain rounded-lg"
             onError={(e) => {
               // Fallback to text if image fails to load
@@ -98,12 +110,12 @@ const Sidebar: React.FC = () => {
               target.style.display = 'none';
               const fallback = document.createElement('span');
               fallback.className = 'text-white text-2xl font-bold';
-              fallback.textContent = 'K';
+              fallback.textContent = 'H';
               target.parentNode?.appendChild(fallback);
             }}
           />
         </div>
-        <span className="text-xl font-bold text-primary tracking-tight">HaloDoc Admin</span>
+        <span className="text-xl font-bold text-primary tracking-tight">halodoc Admin</span>
       </div>
       {/* Navigation */}
       <nav className="flex-1 mt-4 px-4 overflow-y-auto custom-scrollbar-hide">

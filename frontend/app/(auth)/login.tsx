@@ -110,7 +110,7 @@ export default function LoginScreen() {
         suspensionMessage += '\n\nPlease contact support for assistance.';
         setError(suspensionMessage);
       } else {
-      setError(error.response?.data?.message || 'Login failed. Please try again.');
+        setError(error.response?.data?.message || 'Login failed. Please try again.');
       }
     } finally {
       setLoading(false);

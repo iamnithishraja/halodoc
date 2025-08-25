@@ -22,7 +22,7 @@ const s3Client = new S3Client({
     region: 'auto'
 });
 
-const BUCKET_NAME = process.env.R2_BUCKET_NAME || 'HaloDoc-bucket';
+const BUCKET_NAME = process.env.R2_BUCKET_NAME || 'klinic-bucket';
 
 // Cache for parsed PDFs (cache for 24 hours)
 const pdfCache = new NodeCache({ stdTTL: 86400, checkperiod: 3600 });

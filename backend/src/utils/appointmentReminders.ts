@@ -75,7 +75,7 @@ const parseTimeSlot = (timeSlot: string): Date => {
 const sendReminderEmail = async (email: string, subject: string, message: string) => {
     try {
         const { error } = await resend.emails.send({
-            from: 'HaloDoc Reminders <reminders@HaloDoc.com>',
+            from: 'halodoc Reminders <reminders@halodoc.com>',
             to: email,
             subject: subject,
             html: `
@@ -86,7 +86,7 @@ const sendReminderEmail = async (email: string, subject: string, message: string
                     </div>
                     <p style="color: #6b7280; font-size: 14px; margin-top: 20px;">
                         Best regards,<br/>
-                        HaloDoc Team
+                        halodoc Team
                     </p>
                 </div>
             `,

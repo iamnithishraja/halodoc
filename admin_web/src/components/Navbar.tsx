@@ -27,7 +27,7 @@
 //     <nav className="w-full bg-white shadow-md fixed top-0 left-0 z-50 flex items-center justify-between px-8 py-3 border-b border-gray-100">
 //       {/* Left: Logo/Brand */}
 //       <div className="flex items-center gap-3">
-//         <span className="text-2xl font-bold text-tint tracking-tight">HaloDoc</span>
+//         <span className="text-2xl font-bold text-tint tracking-tight">halodoc</span>
 //         <span className="text-xs bg-tint text-white px-2 py-1 rounded-full ml-2">Admin Panel</span>
 //       </div>
 

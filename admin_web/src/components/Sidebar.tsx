@@ -101,7 +101,7 @@ const Sidebar: React.FC = () => {
       <div className="sticky top-0 z-10 bg-background rounded-tr-2xl p-6 border-b border-border flex items-center gap-4 shadow-sm">
         <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg overflow-hidden">
           <img 
-            src="../../logo.jpng" 
+            src="../../icon.png" 
             alt="halodoc Logo" 
             className="w-8 h-8 object-contain rounded-lg"
             onError={(e) => {

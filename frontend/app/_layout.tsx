@@ -1,6 +1,6 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 // @ts-ignore
-import { Slot, useRouter, usePathname } from 'expo-router';
+import { Slot, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import * as SplashScreen from 'expo-splash-screen';
 import 'react-native-reanimated';
@@ -50,7 +50,6 @@ interface UserDataLoaderProps {
 function UserDataLoader({ isLoadingComplete, setLoadingComplete }: UserDataLoaderProps) {
   const setUser = useUserStore(state => state.setUser);
   const router = useRouter();
-  const pathname = usePathname();
   
   // Load resources and data
   useEffect(() => {
@@ -67,18 +66,14 @@ function UserDataLoader({ isLoadingComplete, setLoadingComplete }: UserDataLoade
         } catch (error: unknown) {
           console.error("API call failed:", error);
           const axiosError = error as AxiosError;
-          
-          // Don't redirect if user is already on auth pages or landing page
-          const isOnAuthPage = pathname?.includes('/(auth)/') || pathname === '/landing';
-          
-          if (isWeb && axiosError.response && axiosError.response.status === 401 && !isOnAuthPage) {
+          if (isWeb && axiosError.response && axiosError.response.status === 401) {
             router.replace('/landing' as any);
             return;
           }
-          if (axiosError.response && axiosError.response.status === 401 && !isOnAuthPage) {
+          if (axiosError.response && axiosError.response.status === 401) {
             router.replace('/(auth)/login' as any);
           }
-          if (axiosError.response && axiosError.response.status === 408 && !isOnAuthPage) {
+          if (axiosError.response && axiosError.response.status === 408) {
             router.replace('/(auth)/verify' as any);
           }
         }
@@ -92,7 +87,7 @@ function UserDataLoader({ isLoadingComplete, setLoadingComplete }: UserDataLoade
     if (!isLoadingComplete) {
       prepare();
     }
-  }, [isLoadingComplete, setLoadingComplete, setUser, router, pathname]);
+  }, [isLoadingComplete, setLoadingComplete, setUser, router]);
   
   return <Slot />;
 }
